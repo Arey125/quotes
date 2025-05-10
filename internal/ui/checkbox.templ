@@ -1,0 +1,14 @@
+package ui
+
+templ Checkbox(name string, title string, attrs templ.Attributes) {
+	<div class="checkboxes">
+		<label class="checkbox">
+			<input
+				type="checkbox"
+				name={ name }
+                { attrs... }
+			/>
+			{ title }
+		</label>
+	</div>
+}

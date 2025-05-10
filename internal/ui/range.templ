@@ -1,0 +1,30 @@
+package ui
+
+templ RangeInput(name string, title string, attrs templ.Attributes) {
+	<label class="label">{ title }</label>
+	<div
+		class="range-input"
+		x-data="{min: '', max:''}"
+	>
+		<input
+			type="number"
+			class="input"
+			name={ "min_" + name }
+			x-model="min"
+			:max="max"
+			:class="{'is-danger': min !== '' && max !== '' && Number(min) > Number(max) }"
+            { attrs... }
+		/>
+		<input
+			type="number"
+			class="input"
+			name={ "max_" + name }
+			x-model="max"
+			:min="min"
+			:class="{'is-danger': min !== '' && max !== '' && Number(min) > Number(max) }"
+			hx-get="/?page=0"
+			hx-trigger="input changed"
+            { attrs... }
+		/>
+	</div>
+}
