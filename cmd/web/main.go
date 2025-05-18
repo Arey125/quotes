@@ -3,24 +3,17 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
 	"time"
 
-	_ "github.com/joho/godotenv/autoload"
-
+	"quotes/internal/config"
 	database "quotes/internal/db"
 	"quotes/internal/quotes"
 )
 
 func main() {
-	dsn := os.Getenv("DB")
-	db := database.Connect(dsn)
+	config := config.Get()
+	db := database.Connect(config.Db)
 	_ = db
-	port, err := strconv.Atoi(os.Getenv("PORT"))
-	if err != nil {
-        panic(err);
-	}
 
     mux := http.NewServeMux()
 
@@ -31,15 +24,15 @@ func main() {
     quotesService.Register(mux)
 
     server := http.Server{
-        Addr: fmt.Sprintf(":%d", port),
+		Addr: fmt.Sprintf(":%d", config.Port),
         Handler: mux,
         IdleTimeout: time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
     }
 
-    fmt.Printf("Listening on http://127.0.0.1:%d\n", port)
-    err = server.ListenAndServe()
+    fmt.Printf("Listening on http://127.0.0.1:%d\n", config.Port)
+	err := server.ListenAndServe()
     if (err != nil) {
         panic(err)
     }
