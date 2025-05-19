@@ -7,6 +7,7 @@ import (
 
 	"quotes/internal/config"
 	database "quotes/internal/db"
+	"quotes/internal/oauth"
 	"quotes/internal/quotes"
 )
 
@@ -22,6 +23,9 @@ func main() {
 
     quotesService := quotes.NewService()
     quotesService.Register(mux)
+
+    oauthService := oauth.NewService(config.Oauth)
+    oauthService.Register(mux)
 
     server := http.Server{
 		Addr: fmt.Sprintf(":%d", config.Port),

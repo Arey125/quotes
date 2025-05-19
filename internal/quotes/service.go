@@ -2,6 +2,8 @@ package quotes
 
 import (
 	"net/http"
+
+	"github.com/a-h/templ"
 )
 
 type Service struct {
@@ -12,7 +14,6 @@ func NewService() Service {
 }
 
 func (s *Service) Register(mux *http.ServeMux) {
-	mux.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("It surely works!"))
-	})
+	mux.Handle("GET /", templ.Handler(home()))
+	mux.Handle("GET /success", templ.Handler(success()))
 }
