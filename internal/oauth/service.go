@@ -29,6 +29,10 @@ func (s *Service) Register(mux *http.ServeMux) {
 }
 
 func (s *Service) signIn(w http.ResponseWriter, r *http.Request) {
+
+	q := r.URL.Query()
+	q.Add("provider", "google")
+	r.URL.RawQuery = q.Encode()
 	gothic.BeginAuthHandler(w, r)
 }
 
