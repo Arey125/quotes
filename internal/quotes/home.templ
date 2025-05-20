@@ -4,7 +4,7 @@ import "quotes/internal/ui"
 
 templ home() {
 	@ui.Base() {
-		<a class="button" href="/auth/google">Sign in with Google</a>
+		<a class="button" href="/auth/google" hx-disable>Sign in with Google</a>
 	}
 }
 

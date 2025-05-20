@@ -9,11 +9,10 @@ import (
 	"quotes/internal/oauth"
 )
 
-
 type config struct {
-	Port  int
-	Db    string
-	Oauth oauth.OauthConfig
+	Port          int
+	Db            string
+	Oauth         oauth.OauthConfig
 }
 
 func getString(name string) string {
@@ -41,6 +40,8 @@ func Get() config {
 	secret := getString("CLIENT_SECRET")
 	callbackUrl := getString("CLIENT_CALLBACK_URL")
 
+    sessionSecret := getString("SESSION_SECRET")
+
 	return config{
 		Port: port,
 		Db:   db,
@@ -48,6 +49,7 @@ func Get() config {
 			Id:          id,
 			Secret:      secret,
 			CallbackUrl: callbackUrl,
+            SessionSecret: sessionSecret,
 		},
 	}
 }
