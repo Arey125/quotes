@@ -8,8 +8,8 @@ templ home() {
 	}
 }
 
-templ success() {
+templ success(userId int) {
 	@ui.Base() {
-        <div>User signed in successfully</div>
+        <div>User {userId} signed in successfully</div>
 	}
 }

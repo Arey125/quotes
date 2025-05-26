@@ -1,4 +1,4 @@
-package oauth
+package users
 
 type OauthConfig struct {
 	Id          string

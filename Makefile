@@ -13,3 +13,6 @@ run: all
 
 sqlite:
 	@sqlite3 $(DB)
+
+migrate:
+	migrate -database "sqlite3://$(DB)" -path ./migrations up

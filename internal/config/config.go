@@ -6,13 +6,13 @@ import (
 	"strconv"
 
 	_ "github.com/joho/godotenv/autoload"
-	"quotes/internal/oauth"
+	"quotes/internal/users"
 )
 
 type config struct {
 	Port          int
 	Db            string
-	Oauth         oauth.OauthConfig
+	Oauth         users.OauthConfig
 }
 
 func getString(name string) string {
@@ -45,7 +45,7 @@ func Get() config {
 	return config{
 		Port: port,
 		Db:   db,
-		Oauth: oauth.OauthConfig{
+		Oauth: users.OauthConfig{
 			Id:          id,
 			Secret:      secret,
 			CallbackUrl: callbackUrl,
