@@ -4,36 +4,56 @@ import (
 	"net/http"
 	"quotes/internal/users"
 
-	"github.com/a-h/templ"
 	"github.com/alexedwards/scs/v2"
 )
 
 type Service struct {
+	model          *Model
 	sessionManager *scs.SessionManager
-	usersModel     *users.UsersModel
+	usersModel     *users.Model
 }
 
-func NewService(sessionManager *scs.SessionManager, usersModel *users.UsersModel) Service {
-	return Service{sessionManager, usersModel}
+func NewService(model *Model, sessionManager *scs.SessionManager, usersModel *users.Model) Service {
+	return Service{model, sessionManager, usersModel}
 }
 
 func (s *Service) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /", s.homePage)
-}
-
-func (s *Service) getUserBadge(r *http.Request) templ.Component {
-	userId, ok := s.sessionManager.Get(r.Context(), "user_id").(int)
-	if !ok {
-		return userBadge(nil)
-	}
-	user, err := s.usersModel.Get(userId)
-	if err != nil || user == nil {
-		return userBadge(nil)
-	}
-	return userBadge(user)
+	mux.HandleFunc("GET /quotes/create", s.createPage)
+	mux.HandleFunc("POST /quotes/", s.createPost)
 }
 
 func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
-	user := s.getUserBadge(r)
-	home(user).Render(r.Context(), w)
+	user := userBadge(s.getUser(r))
+	quotes, err := s.model.All()
+	if err != nil {
+		http.Error(w, "Server error", http.StatusInternalServerError)
+		panic(err)
+		return
+	}
+	home(user, quotes).Render(r.Context(), w)
+}
+
+func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {
+	user := userBadge(s.getUser(r))
+	create(user).Render(r.Context(), w)
+}
+
+func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
+	content := r.FormValue("content")
+	user := s.getUser(r)
+	if user == nil {
+		http.Error(w, "Forbidden", http.StatusForbidden)
+		return
+	}
+	if len(content) < 1 {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	s.model.Add(Quote{
+		Content:   content,
+		CreatedBy: user.Id,
+	})
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

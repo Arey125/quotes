@@ -31,7 +31,8 @@ func main() {
 	usersService := users.NewService(config.Oauth, sessionManager, &usersModel)
 	usersService.Register(mux)
 
-	quotesService := quotes.NewService(sessionManager, &usersModel)
+	quotesModel := quotes.NewModel(db)
+	quotesService := quotes.NewService(&quotesModel, sessionManager, &usersModel)
 	quotesService.Register(mux)
 
 	server := http.Server{

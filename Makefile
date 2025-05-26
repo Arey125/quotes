@@ -16,3 +16,6 @@ sqlite:
 
 migrate:
 	migrate -database "sqlite3://$(DB)" -path ./migrations up
+
+migrate-down:
+	migrate -database "sqlite3://$(DB)" -path ./migrations down 1

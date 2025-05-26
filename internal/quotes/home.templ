@@ -2,6 +2,24 @@ package quotes
 
 import "quotes/internal/ui"
 
-templ home(userBadge templ.Component) {
-	@ui.Base(userBadge) {}
+templ home(userBadge templ.Component, quotes []Quote) {
+	@ui.Base(userBadge) {
+		<div class="container">
+			<section class="section">
+				<nav class="level">
+					<h1 class="title">Quotes</h1>
+					<a class="button is-primary" href="/quotes/create">
+						Create
+					</a>
+				</nav>
+				for _, quote := range quotes {
+					<div class="card">
+						<div class="card-content">
+							{ quote.Content }
+						</div>
+					</div>
+				}
+			</section>
+		</div>
+	}
 }

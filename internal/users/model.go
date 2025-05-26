@@ -20,15 +20,15 @@ type User struct {
 	Name         string
 }
 
-type UsersModel struct {
+type Model struct {
 	db *sql.DB
 }
 
-func NewModel(db *sql.DB) UsersModel {
-	return UsersModel{db}
+func NewModel(db *sql.DB) Model {
+	return Model{db}
 }
 
-func (m *UsersModel) Get(id int) (*User, error) {
+func (m *Model) Get(id int) (*User, error) {
 	row := sq.Select("id", "google_user_id", "name").
 		From("users").
 		Where(sq.Eq{"id": id}).
@@ -47,7 +47,7 @@ func (m *UsersModel) Get(id int) (*User, error) {
 	return &user, nil
 }
 
-func (m *UsersModel) GetByGoogleUserId(googleUserId string) (*User, error) {
+func (m *Model) GetByGoogleUserId(googleUserId string) (*User, error) {
 	row := sq.Select("id", "google_user_id", "name").
 		From("users").
 		Where(sq.Eq{"google_user_id": googleUserId}).
@@ -66,7 +66,7 @@ func (m *UsersModel) GetByGoogleUserId(googleUserId string) (*User, error) {
 	return &user, nil
 }
 
-func (m *UsersModel) Add(user User) error {
+func (m *Model) Add(user User) error {
 	_, err := sq.Insert("users").
 		Columns("google_user_id", "name").
 		Values(user.GoogleUserId, user.Name).
