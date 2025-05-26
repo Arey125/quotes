@@ -14,13 +14,13 @@ import (
 type Service struct {
 	config         OauthConfig
 	sessionManager *scs.SessionManager
-	model          *UserModel
+	model          *UsersModel
 }
 
 func NewService(
 	config OauthConfig,
 	sessionManager *scs.SessionManager,
-	model *UserModel,
+	model *UsersModel,
 ) Service {
 	goth.UseProviders(
 		google.New(config.Id, config.Secret, config.CallbackUrl, "email", "profile"),

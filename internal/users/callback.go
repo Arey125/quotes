@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -15,11 +14,9 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 	r.URL.RawQuery = q.Encode()
 	res, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		fmt.Println(err)
 		http.Error(w, "Server error", http.StatusInternalServerError)
 		return
 	}
-	fmt.Printf("%#v\n", res)
 
 	user, err := s.model.GetByGoogleUserId(res.UserID)
 
@@ -42,6 +39,6 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 	}
 	s.sessionManager.Put(r.Context(), "user_id", user.Id)
 
-	http.Redirect(w, r, "/success", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
 

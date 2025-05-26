@@ -2,10 +2,15 @@ package users
 
 import (
 	"database/sql"
+	"encoding/gob"
 	"errors"
 
 	sq "github.com/Masterminds/squirrel"
 )
+
+func init() {
+	gob.Register(User{})
+}
 
 var ErrUserNotFound = errors.New("user not found")
 
@@ -15,15 +20,15 @@ type User struct {
 	Name         string
 }
 
-type UserModel struct {
+type UsersModel struct {
 	db *sql.DB
 }
 
-func NewModel(db *sql.DB) UserModel {
-	return UserModel{db}
+func NewModel(db *sql.DB) UsersModel {
+	return UsersModel{db}
 }
 
-func (m *UserModel) Get(id string) (*User, error) {
+func (m *UsersModel) Get(id int) (*User, error) {
 	row := sq.Select("id", "google_user_id", "name").
 		From("users").
 		Where(sq.Eq{"id": id}).
@@ -42,7 +47,7 @@ func (m *UserModel) Get(id string) (*User, error) {
 	return &user, nil
 }
 
-func (m *UserModel) GetByGoogleUserId(googleUserId string) (*User, error) {
+func (m *UsersModel) GetByGoogleUserId(googleUserId string) (*User, error) {
 	row := sq.Select("id", "google_user_id", "name").
 		From("users").
 		Where(sq.Eq{"google_user_id": googleUserId}).
@@ -61,7 +66,7 @@ func (m *UserModel) GetByGoogleUserId(googleUserId string) (*User, error) {
 	return &user, nil
 }
 
-func (m *UserModel) Add(user User) error {
+func (m *UsersModel) Add(user User) error {
 	_, err := sq.Insert("users").
 		Columns("google_user_id", "name").
 		Values(user.GoogleUserId, user.Name).

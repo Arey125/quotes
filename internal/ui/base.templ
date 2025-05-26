@@ -1,6 +1,6 @@
 package ui
 
-templ Base() {
+templ Base(userBadge templ.Component) {
 	<html>
 		<head>
 			<meta charset="UTF-8"/>
@@ -12,13 +12,19 @@ templ Base() {
 			<script defer src="/static/alpinejs.min.js"></script>
 		</head>
 		<body>
-			<nav class="navbar" role="navigation" aria-label="main navigation">
+			<nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
 				<div class="navbar-brand">
 					<div class="logo">
 						Quotes
 					</div>
 				</div>
-				<div id="navbarBasicExample" class="navbar-menu"></div>
+				<div id="navbarBasicExample" class="navbar-menu">
+					<div class="navbar-end">
+						<div class="navbar-item">
+							@userBadge
+						</div>
+					</div>
+				</div>
 			</nav>
 			{ children... }
 		</body>

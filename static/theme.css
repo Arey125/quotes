@@ -1,14 +1,10 @@
 .logo {
-  padding: 6px 16px 0 16px;
+  padding: 6px 16px 0 24px;
 
   font-size: 24px;
   font-weight: 600;
   vertical-align: bottom;
   color: #eee;
-}
-
-.navbar {
-  border-bottom: 1px solid #111
 }
 
 .problem-list {

@@ -27,13 +27,12 @@ func main() {
 	staticFileServer := http.FileServer(http.Dir("./static"))
 	mux.Handle("GET /static/", http.StripPrefix("/static", staticFileServer))
 
-	quotesService := quotes.NewService(sessionManager)
-	quotesService.Register(mux)
-
 	usersModel := users.NewModel(db)
-
 	usersService := users.NewService(config.Oauth, sessionManager, &usersModel)
 	usersService.Register(mux)
+
+	quotesService := quotes.NewService(sessionManager, &usersModel)
+	quotesService.Register(mux)
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", config.Port),
