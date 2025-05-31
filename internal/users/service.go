@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
 	"quotes/internal/server"
 	"strconv"
@@ -100,6 +101,7 @@ func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
 		usersWithPermissions[i].permissions.canReadQuotes = canReadQuotes
 		usersWithPermissions[i].permissions.canChangePermissions = canChangePermissions
 	}
+	fmt.Println(usersWithPermissions)
 	s.permissions(userBadge, usersWithPermissions).Render(r.Context(), w)
 }
 

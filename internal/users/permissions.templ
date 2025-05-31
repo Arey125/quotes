@@ -36,7 +36,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											check?={ user.permissions.canReadQuotes }
+											checked?={ user.permissions.canReadQuotes }
 											name={ PermissonQuotesRead }
 											hx-post="/user-permissions"
 										/>
@@ -46,7 +46,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											check?={ user.permissions.canReadQuotes }
+											checked?={ user.permissions.canWriteQuotes }
 											name={ PermissonQuotesWrite }
 											hx-post="/user-permissions"
 										/>
@@ -56,7 +56,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											check?={ user.permissions.canReadQuotes }
+											checked?={ user.permissions.canChangePermissions }
 											name={ PermissonUserPermissions }
 											hx-post="/user-permissions"
 										/>
