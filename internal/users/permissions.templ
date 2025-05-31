@@ -1,0 +1,72 @@
+package users
+
+import "quotes/internal/ui"
+
+type UserWithPermissions struct {
+	user        User
+	permissions struct {
+		canReadQuotes        bool
+		canWriteQuotes       bool
+		canChangePermissions bool
+	}
+}
+
+templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermissions) {
+	@ui.Base(userBadge) {
+		<div class="container">
+			<section class="section">
+				<h1 class="title">Permissions</h1>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Can read quotes</th>
+							<th>Can write quotes</th>
+							<th>Can read/change permissions</th>
+						</tr>
+					</thead>
+					<tbody hx-include="previous [name=user]">
+						for _, user := range users {
+							<tr>
+								<td>
+									{ user.user.Name }
+									<input type="hidden" name="user" value={ user.user.Id }/>
+								</td>
+								<td>
+									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
+										<input
+											type="checkbox"
+											check?={ user.permissions.canReadQuotes }
+											name={ PermissonQuotesRead }
+											hx-post="/user-permissions"
+										/>
+									</div>
+								</td>
+								<td>
+									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
+										<input
+											type="checkbox"
+											check?={ user.permissions.canReadQuotes }
+											name={ PermissonQuotesWrite }
+											hx-post="/user-permissions"
+										/>
+									</div>
+								</td>
+								<td>
+									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
+										<input
+											type="checkbox"
+											check?={ user.permissions.canReadQuotes }
+											name={ PermissonUserPermissions }
+											hx-post="/user-permissions"
+										/>
+									</div>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</section>
+		</div>
+	}
+}

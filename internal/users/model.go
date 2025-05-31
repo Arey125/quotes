@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/gob"
 	"errors"
+	"quotes/internal/db"
 
 	sq "github.com/Masterminds/squirrel"
 )
@@ -47,6 +48,21 @@ func (m *Model) Get(id int) (*User, error) {
 	return &user, nil
 }
 
+func (m *Model) All() ([]User, error) {
+	rows, err := sq.Select("id", "google_user_id", "name").
+		From("users").
+		RunWith(m.db).
+		Query()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return db.Collect(rows, func(rows *sql.Rows, u *User) error {
+		return rows.Scan(&u.Id, &u.GoogleUserId, &u.Name)
+	})
+}
+
 func (m *Model) GetByGoogleUserId(googleUserId string) (*User, error) {
 	row := sq.Select("id", "google_user_id", "name").
 		From("users").
@@ -74,4 +90,49 @@ func (m *Model) Add(user User) error {
 		Exec()
 
 	return err
+}
+
+func (m *Model) AddPermission(userId int, perm Permisson) error {
+	getInsertedRow := sq.Select().
+		Column("?", userId).
+		Column("id").
+		From("permissions").
+		Where(sq.Eq{"slug": perm}).
+		Limit(1)
+
+	_, err := sq.Insert("user_permissions").
+		Options("OR IGNORE").
+		Columns("user_id", "permission_id").
+		Select(getInsertedRow).
+		Values(userId, perm).
+		RunWith(m.db).
+		Exec()
+
+	return err
+}
+
+func (m *Model) RemovePermission(userId int, perm Permisson) error {
+	_, err := sq.Delete("user_permissions").
+		Where(`user_id = ? and permission_id = 
+		(select id from permissions where slug = ? limit 1)`, userId, perm).
+		RunWith(m.db).
+		Exec()
+
+	return err
+}
+
+func (m *Model) HasPermission(userId int, perm Permisson) (bool, error) {
+	row := sq.Select("COUNT(1)").
+		From("user_permissions").
+		Join("permissions on user_permissions.permission_id = permissions.id").
+		Where(sq.Eq{"user_id": userId, "slug": perm}).
+		RunWith(m.db).
+		QueryRow()
+
+	res := 0
+	err := row.Scan(&res)
+	if err != nil {
+		return false, err
+	}
+	return res == 1, nil
 }

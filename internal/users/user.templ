@@ -1,11 +1,9 @@
-package quotes
+package users
 
-import "quotes/internal/users"
-
-templ userBadge(user *users.User) {
+templ UserBadge(user *User) {
 	if user == nil {
 		<div class="buttons">
-			<a class="button is-primary" href="/auth/google">
+			<a class="button is-info" href="/auth/google">
 				<strong>Log in</strong>
 			</a>
 		</div>

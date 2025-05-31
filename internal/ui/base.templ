@@ -8,17 +8,22 @@ templ Base(userBadge templ.Component) {
 			<title>Quotes</title>
 			<link rel="stylesheet" href="/static/bulma.min.css"/>
 			<link rel="stylesheet" href="/static/theme.css"/>
-			<script src="/static/htmx.min.js"></script>
+			<script src="/static/htmx.debug.js"></script>
 			<script defer src="/static/alpinejs.min.js"></script>
 		</head>
 		<body>
 			<nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
 				<div class="navbar-brand">
-					<div class="logo">
+					<a class="logo" href="/">
 						Quotes
-					</div>
+					</a>
 				</div>
-				<div id="navbarBasicExample" class="navbar-menu">
+				<div class="navbar-menu">
+					<div class="navbar-start">
+						<a class="navbar-item" href="/user-permissions">
+							Permissions
+						</a>
+					</div>
 					<div class="navbar-end">
 						<div class="navbar-item">
 							@userBadge

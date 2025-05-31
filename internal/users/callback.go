@@ -1,7 +1,9 @@
 package users
 
 import (
+	"fmt"
 	"net/http"
+	"quotes/internal/server"
 
 	_ "github.com/joho/godotenv/autoload"
 
@@ -14,14 +16,15 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 	r.URL.RawQuery = q.Encode()
 	res, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		http.Error(w, "Server error", http.StatusInternalServerError)
+		server.ServerError(w)
+		fmt.Println(err)
 		return
 	}
 
 	user, err := s.model.GetByGoogleUserId(res.UserID)
 
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		server.ServerError(w)
 		return
 	}
 
@@ -33,7 +36,7 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 
 		user, err = s.model.GetByGoogleUserId(res.UserID)
 		if err != nil || user == nil {
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			server.ServerError(w)
 			return
 		}
 	}
@@ -41,4 +44,3 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
-

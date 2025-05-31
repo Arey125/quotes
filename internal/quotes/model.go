@@ -2,7 +2,7 @@ package quotes
 
 import (
 	"database/sql"
-	"errors"
+	"quotes/internal/db"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -14,6 +14,22 @@ type Quote struct {
 	Content   string
 	CreatedBy int
 	CreatedAt time.Time
+}
+
+func scanQuote(scanner sq.RowScanner, q *Quote) error {
+	createdAtStr := ""
+	err := scanner.Scan(&q.Id, &q.Content, &q.CreatedBy, &createdAtStr)
+	if err != nil {
+		return err
+	}
+	createdAt, err := time.Parse(sqlite3.SQLiteTimestampFormats[0], createdAtStr)
+
+	if err != nil {
+		return err
+	}
+
+	q.CreatedAt = createdAt
+	return nil
 }
 
 type Model struct {
@@ -36,25 +52,10 @@ func (m *Model) Get(id int) (*Quote, error) {
 		QueryRow()
 
 	quote := Quote{}
-	createdAtStr := ""
-	err := row.Scan(
-		&quote.Id,
-		&quote.Content,
-		&quote.CreatedBy,
-		&createdAtStr,
-	)
-
-	if errors.Is(err, sql.ErrNoRows) {
-		return nil, nil
-	}
+	err := scanQuote(row, &quote)
 	if err != nil {
-		return nil, err
+		return nil, err 
 	}
-	createdAt, err := time.Parse(sqlite3.SQLiteTimestampFormats[0], createdAtStr)
-	if err != nil {
-		return nil, err
-	}
-	quote.CreatedAt = createdAt
 	return &quote, nil
 }
 
@@ -66,35 +67,10 @@ func (m *Model) All() ([]Quote, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	quotes := make([]Quote, 0)
-	for rows.Next() {
-		q := Quote{}
-		createdAtStr := ""
-		err := rows.Scan(
-			&q.Id,
-			&q.Content,
-			&q.CreatedBy,
-			&createdAtStr,
-		)
-		if err != nil {
-			return nil, err
-		}
-		createdAt, err := time.Parse(sqlite3.SQLiteTimestampFormats[0], createdAtStr)
-		if err != nil {
-			return nil, err
-		}
-		q.CreatedAt = createdAt
-
-		quotes = append(quotes, q)
-	}
-	err = rows.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	return quotes, nil
+	return db.Collect(rows, func(r *sql.Rows, q *Quote) error {
+		return scanQuote(r, q)
+	})
 }
 
 func (m *Model) Add(quote Quote) error {

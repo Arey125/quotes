@@ -2,6 +2,7 @@ package quotes
 
 import (
 	"net/http"
+	"quotes/internal/server"
 	"quotes/internal/users"
 
 	"github.com/alexedwards/scs/v2"
@@ -24,18 +25,17 @@ func (s *Service) Register(mux *http.ServeMux) {
 }
 
 func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
-	user := userBadge(s.getUser(r))
+	user := users.UserBadge(s.getUser(r))
 	quotes, err := s.model.All()
 	if err != nil {
-		http.Error(w, "Server error", http.StatusInternalServerError)
-		panic(err)
+		server.ServerError(w)
 		return
 	}
 	home(user, quotes).Render(r.Context(), w)
 }
 
 func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {
-	user := userBadge(s.getUser(r))
+	user := users.UserBadge(s.getUser(r))
 	create(user).Render(r.Context(), w)
 }
 

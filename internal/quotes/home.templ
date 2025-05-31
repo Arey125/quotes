@@ -16,6 +16,11 @@ templ home(userBadge templ.Component, quotes []Quote) {
 					<div class="card">
 						<div class="card-content">
 							{ quote.Content }
+							<br/>
+							{ quote.CreatedAt.String() }
+                            <br/>
+                            created by: 
+							{ quote.CreatedBy }
 						</div>
 					</div>
 				}
