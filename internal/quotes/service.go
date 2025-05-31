@@ -25,13 +25,13 @@ func (s *Service) Register(mux *http.ServeMux) {
 }
 
 func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
-	user := users.UserBadge(s.getUser(r))
+	pageContext := s.getPageContext(r)
 	quotes, err := s.model.All()
 	if err != nil {
 		server.ServerError(w)
 		return
 	}
-	home(user, quotes).Render(r.Context(), w)
+	home(pageContext, quotes).Render(r.Context(), w)
 }
 
 func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {

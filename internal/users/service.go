@@ -1,7 +1,6 @@
 package users
 
 import (
-	"fmt"
 	"net/http"
 	"quotes/internal/server"
 	"strconv"
@@ -81,7 +80,7 @@ func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
 	}
 	usersWithPermissions := make([]UserWithPermissions, len(users))
 	for i, u := range users {
-		usersWithPermissions[i].user = u
+		usersWithPermissions[i].User = u
 		canReadQuotes, err := s.model.HasPermission(user.Id, PermissonQuotesRead)
 		if err != nil {
 			server.ServerError(w)
@@ -97,11 +96,10 @@ func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
 			server.ServerError(w)
 			return
 		}
-		usersWithPermissions[i].permissions.canWriteQuotes = canWriteQuotes
-		usersWithPermissions[i].permissions.canReadQuotes = canReadQuotes
-		usersWithPermissions[i].permissions.canChangePermissions = canChangePermissions
+		usersWithPermissions[i].Permissions.CanWriteQuotes = canWriteQuotes
+		usersWithPermissions[i].Permissions.CanReadQuotes = canReadQuotes
+		usersWithPermissions[i].Permissions.CanChangePermissions = canChangePermissions
 	}
-	fmt.Println(usersWithPermissions)
 	s.permissions(userBadge, usersWithPermissions).Render(r.Context(), w)
 }
 

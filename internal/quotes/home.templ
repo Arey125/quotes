@@ -2,27 +2,31 @@ package quotes
 
 import "quotes/internal/ui"
 
-templ home(userBadge templ.Component, quotes []Quote) {
-	@ui.Base(userBadge) {
+templ home(c PageContext, quotes []Quote) {
+	@ui.Base(c.getUserBadge()) {
 		<div class="container">
 			<section class="section">
 				<nav class="level">
 					<h1 class="title">Quotes</h1>
-					<a class="button is-primary" href="/quotes/create">
-						Create
-					</a>
+					if c.getPermissions().CanWriteQuotes {
+						<a class="button is-primary" href="/quotes/create">
+							Create
+						</a>
+					}
 				</nav>
-				for _, quote := range quotes {
-					<div class="card">
-						<div class="card-content">
-							{ quote.Content }
-							<br/>
-							{ quote.CreatedAt.String() }
-                            <br/>
-                            created by: 
-							{ quote.CreatedBy }
+				if c.getPermissions().CanReadQuotes {
+					for _, quote := range quotes {
+						<div class="card">
+							<div class="card-content">
+								{ quote.Content }
+								<br/>
+								{ quote.CreatedAt.String() }
+								<br/>
+								created by: 
+								{ quote.CreatedBy }
+							</div>
 						</div>
-					</div>
+					}
 				}
 			</section>
 		</div>

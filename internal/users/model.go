@@ -21,6 +21,17 @@ type User struct {
 	Name         string
 }
 
+type UserPermissions struct {
+	CanReadQuotes        bool
+	CanWriteQuotes       bool
+	CanChangePermissions bool
+}
+
+type UserWithPermissions struct {
+	User        User
+	Permissions UserPermissions
+}
+
 type Model struct {
 	db *sql.DB
 }
@@ -135,4 +146,36 @@ func (m *Model) HasPermission(userId int, perm Permisson) (bool, error) {
 		return false, err
 	}
 	return res == 1, nil
+}
+
+func (m *Model) GetUserWithPermissions(userId int) (*UserWithPermissions, error) {
+	user, err := m.Get(userId)
+	if err != nil {
+		return nil, err
+	}
+	if user == nil {
+		return nil, nil
+	}
+
+	canReadQuotes, err := m.HasPermission(user.Id, PermissonQuotesRead)
+	if err != nil {
+		return nil, err
+	}
+	canWriteQuotes, err := m.HasPermission(user.Id, PermissonQuotesWrite)
+	if err != nil {
+		return nil, err
+	}
+	canChangePermissions, err := m.HasPermission(user.Id, PermissonUserPermissions)
+	if err != nil {
+		return nil, err
+	}
+
+	return &UserWithPermissions{
+		User: *user,
+		Permissions: UserPermissions{
+			CanReadQuotes:        canReadQuotes,
+			CanWriteQuotes:       canWriteQuotes,
+			CanChangePermissions: canChangePermissions,
+		},
+	}, nil
 }

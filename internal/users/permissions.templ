@@ -2,15 +2,6 @@ package users
 
 import "quotes/internal/ui"
 
-type UserWithPermissions struct {
-	user        User
-	permissions struct {
-		canReadQuotes        bool
-		canWriteQuotes       bool
-		canChangePermissions bool
-	}
-}
-
 templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermissions) {
 	@ui.Base(userBadge) {
 		<div class="container">
@@ -29,14 +20,14 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 						for _, user := range users {
 							<tr>
 								<td>
-									{ user.user.Name }
-									<input type="hidden" name="user" value={ user.user.Id }/>
+									{ user.User.Name }
+									<input type="hidden" name="user" value={ user.User.Id }/>
 								</td>
 								<td>
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											checked?={ user.permissions.canReadQuotes }
+											checked?={ user.Permissions.CanReadQuotes }
 											name={ PermissonQuotesRead }
 											hx-post="/user-permissions"
 										/>
@@ -46,7 +37,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											checked?={ user.permissions.canWriteQuotes }
+											checked?={ user.Permissions.CanWriteQuotes }
 											name={ PermissonQuotesWrite }
 											hx-post="/user-permissions"
 										/>
@@ -56,7 +47,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											checked?={ user.permissions.canChangePermissions }
+											checked?={ user.Permissions.CanChangePermissions }
 											name={ PermissonUserPermissions }
 											hx-post="/user-permissions"
 										/>
