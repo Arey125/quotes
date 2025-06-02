@@ -81,17 +81,17 @@ func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
 	usersWithPermissions := make([]UserWithPermissions, len(users))
 	for i, u := range users {
 		usersWithPermissions[i].User = u
-		canReadQuotes, err := s.model.HasPermission(user.Id, PermissonQuotesRead)
+		canReadQuotes, err := s.model.HasPermission(u.Id, PermissonQuotesRead)
 		if err != nil {
 			server.ServerError(w)
 			return
 		}
-		canWriteQuotes, err := s.model.HasPermission(user.Id, PermissonQuotesWrite)
+		canWriteQuotes, err := s.model.HasPermission(u.Id, PermissonQuotesWrite)
 		if err != nil {
 			server.ServerError(w)
 			return
 		}
-		canChangePermissions, err := s.model.HasPermission(user.Id, PermissonUserPermissions)
+		canChangePermissions, err := s.model.HasPermission(u.Id, PermissonUserPermissions)
 		if err != nil {
 			server.ServerError(w)
 			return

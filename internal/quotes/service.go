@@ -4,18 +4,14 @@ import (
 	"net/http"
 	"quotes/internal/server"
 	"quotes/internal/users"
-
-	"github.com/alexedwards/scs/v2"
 )
 
 type Service struct {
 	model          *Model
-	sessionManager *scs.SessionManager
-	usersModel     *users.Model
 }
 
-func NewService(model *Model, sessionManager *scs.SessionManager, usersModel *users.Model) Service {
-	return Service{model, sessionManager, usersModel}
+func NewService(model *Model) Service {
+	return Service{model}
 }
 
 func (s *Service) Register(mux *http.ServeMux) {

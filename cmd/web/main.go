@@ -30,14 +30,15 @@ func main() {
 	usersModel := users.NewModel(db)
 	usersService := users.NewService(config.Oauth, sessionManager, &usersModel)
 	usersService.Register(mux)
+	injectUserMiddleware := users.NewInjectUserMiddleware(&usersModel, sessionManager)
 
 	quotesModel := quotes.NewModel(db)
-	quotesService := quotes.NewService(&quotesModel, sessionManager, &usersModel)
+	quotesService := quotes.NewService(&quotesModel)
 	quotesService.Register(mux)
 
 	server := http.Server{
 		Addr:         fmt.Sprintf(":%d", config.Port),
-		Handler:      sessionManager.LoadAndSave(mux),
+		Handler:      sessionManager.LoadAndSave(injectUserMiddleware.Wrap(mux)),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
