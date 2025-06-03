@@ -51,8 +51,18 @@ func (s *Service) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /auth/google", s.signIn)
 	mux.HandleFunc("GET /auth/google/callback", s.callback)
 	mux.HandleFunc("GET /logout/google", s.logout)
-	mux.HandleFunc("GET /user-permissions", s.userPermissionsPage)
-	mux.HandleFunc("POST /user-permissions", s.changeUserPermission)
+	mux.Handle("GET /user-permissions",
+		OnlyWithPermission(
+			http.HandlerFunc(s.userPermissionsPage),
+			PermissonUserPermissions,
+		),
+	)
+	mux.Handle("POST /user-permissions",
+		OnlyWithPermission(
+			http.HandlerFunc(s.changeUserPermission),
+			PermissonUserPermissions,
+		),
+	)
 }
 
 func (s *Service) signIn(w http.ResponseWriter, r *http.Request) {

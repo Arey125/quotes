@@ -3,6 +3,7 @@ package users
 import (
 	"context"
 	"net/http"
+	"quotes/internal/server"
 
 	"github.com/alexedwards/scs/v2"
 )
@@ -35,7 +36,7 @@ func (m *InjectUserMiddleware) Wrap(next http.Handler) http.Handler {
 		}()
 
 		ctx := context.WithValue(r.Context(), contextKeyUser, userWithPermissions)
-		
+
 		next.ServeHTTP(w, r.WithContext(ctx))
 	}
 	return http.HandlerFunc(fn)
@@ -47,4 +48,21 @@ func GetUser(r *http.Request) *UserWithPermissions {
 		panic("could not get user from request context, probably InjectUserMiddleware is absent")
 	}
 	return user
+}
+
+func OnlyWithPermission(next http.Handler, perm Permisson) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		userWithPermissions := GetUser(r)
+		if userWithPermissions == nil {
+			server.Forbiden(w)
+			return
+		}
+		if !userWithPermissions.Permissions.HasPermission(perm) {
+			server.Forbiden(w)
+			return
+		}
+		next.ServeHTTP(w, r)
+	}
+
+	return http.HandlerFunc(fn)
 }

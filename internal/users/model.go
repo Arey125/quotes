@@ -27,6 +27,19 @@ type UserPermissions struct {
 	CanChangePermissions bool
 }
 
+func (p UserPermissions) HasPermission(perm Permisson) bool {
+	if perm == PermissonQuotesRead {
+		return p.CanReadQuotes
+	}
+	if perm == PermissonQuotesWrite {
+		return p.CanWriteQuotes
+	}
+	if perm == PermissonUserPermissions {
+		return p.CanChangePermissions
+	}
+	panic("permission does not exist")
+}
+
 type UserWithPermissions struct {
 	User        User
 	Permissions UserPermissions

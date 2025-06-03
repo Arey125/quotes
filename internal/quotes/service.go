@@ -7,7 +7,7 @@ import (
 )
 
 type Service struct {
-	model          *Model
+	model *Model
 }
 
 func NewService(model *Model) Service {
@@ -16,8 +16,18 @@ func NewService(model *Model) Service {
 
 func (s *Service) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /", s.homePage)
-	mux.HandleFunc("GET /quotes/create", s.createPage)
-	mux.HandleFunc("POST /quotes/", s.createPost)
+	mux.Handle("GET /quotes/create",
+		users.OnlyWithPermission(
+			http.HandlerFunc(s.createPage),
+			users.PermissonQuotesWrite,
+		),
+	)
+	mux.Handle("POST /quotes/",
+		users.OnlyWithPermission(
+			http.HandlerFunc(s.createPost),
+			users.PermissonQuotesWrite,
+		),
+	)
 }
 
 func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
