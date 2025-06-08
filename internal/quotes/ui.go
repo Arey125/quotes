@@ -16,11 +16,8 @@ func (s *Service) getPageContext(r *http.Request) PageContext {
 	return PageContext{User: user}
 }
 
-func (c *PageContext) getUserBadge() templ.Component {
-	if c.User == nil {
-		return users.UserBadge(nil)
-	}
-	return users.UserBadge(&c.User.User)
+func (c *PageContext) getNavigation() templ.Component {
+	return users.Navigation(c.User)
 }
 
 func (c *PageContext) getPermissions() users.UserPermissions {

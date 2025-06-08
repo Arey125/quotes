@@ -3,7 +3,7 @@ package quotes
 import "quotes/internal/ui"
 
 templ home(c PageContext, quotes []Quote) {
-	@ui.Base(c.getUserBadge()) {
+	@ui.Base(c.getNavigation()) {
 		<div class="container">
 			<section class="section">
 				<nav class="level">

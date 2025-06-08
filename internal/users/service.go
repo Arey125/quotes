@@ -47,6 +47,19 @@ func (s *Service) getUser(r *http.Request) *User {
 	return user
 }
 
+func (s *Service) getUserWithPermissions(r *http.Request) *UserWithPermissions {
+	userId, ok := s.sessionManager.Get(r.Context(), "user_id").(int)
+	if !ok {
+		return nil
+	}
+	user, err := s.model.GetUserWithPermissions(userId)
+	if err != nil || user == nil {
+		return nil
+	}
+	return user
+}
+
+
 func (s *Service) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /auth/google", s.signIn)
 	mux.HandleFunc("GET /auth/google/callback", s.callback)
@@ -81,8 +94,8 @@ func (s *Service) logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
-	user := s.getUser(r)
-	userBadge := UserBadge(user)
+	user := s.getUserWithPermissions(r)
+	navigation := Navigation(user)
 	users, err := s.model.All()
 	if err != nil {
 		server.ServerError(w)
@@ -110,7 +123,7 @@ func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
 		usersWithPermissions[i].Permissions.CanReadQuotes = canReadQuotes
 		usersWithPermissions[i].Permissions.CanChangePermissions = canChangePermissions
 	}
-	s.permissions(userBadge, usersWithPermissions).Render(r.Context(), w)
+	s.permissions(navigation, usersWithPermissions).Render(r.Context(), w)
 }
 
 func (s *Service) changeUserPermission(w http.ResponseWriter, r *http.Request) {

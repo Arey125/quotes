@@ -2,8 +2,8 @@ package quotes
 
 import "quotes/internal/ui"
 
-templ create(userBadge templ.Component) {
-	@ui.Base(userBadge) {
+templ create(c PageContext) {
+	@ui.Base(c.getNavigation()) {
 		<div class="container">
 			<section class="section">
 				<h1 class="title">Create quote</h1>

@@ -41,14 +41,15 @@ func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {
-	user := users.UserBadge(s.getUser(r))
-	create(user).Render(r.Context(), w)
+	pageContext := s.getPageContext(r)
+	create(pageContext).Render(r.Context(), w)
 }
 
 func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
-	user := s.getUser(r)
-	if user == nil {
+	userWithPermissions := users.GetUser(r)
+
+	if userWithPermissions == nil {
 		http.Error(w, "Forbidden", http.StatusForbidden)
 		return
 	}
@@ -59,7 +60,7 @@ func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
 
 	s.model.Add(Quote{
 		Content:   content,
-		CreatedBy: user.Id,
+		CreatedBy: userWithPermissions.User.Id,
 	})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
