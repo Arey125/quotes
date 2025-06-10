@@ -3,6 +3,7 @@ package quotes
 import (
 	"database/sql"
 	"quotes/internal/db"
+	"quotes/internal/users"
 	"time"
 
 	sq "github.com/Masterminds/squirrel"
@@ -12,13 +13,13 @@ import (
 type Quote struct {
 	Id        int
 	Content   string
-	CreatedBy int
+	CreatedBy users.User
 	CreatedAt time.Time
 }
 
 func scanQuote(scanner sq.RowScanner, q *Quote) error {
 	createdAtStr := ""
-	err := scanner.Scan(&q.Id, &q.Content, &q.CreatedBy, &createdAtStr)
+	err := scanner.Scan(&q.Id, &q.Content, &createdAtStr, &q.CreatedBy.Id, &q.CreatedBy.Name)
 	if err != nil {
 		return err
 	}
@@ -41,7 +42,9 @@ func NewModel(db *sql.DB) Model {
 }
 
 func selectQuotes() sq.SelectBuilder {
-	return sq.Select("id", "content", "created_by", "created_at").From("quotes")
+	return sq.Select("quotes.id", "quotes.content", "quotes.created_at", "users.id", "users.name").
+		From("quotes").
+		Join("users ON quotes.created_by = users.id")
 }
 
 func (m *Model) Get(id int) (*Quote, error) {
@@ -54,13 +57,14 @@ func (m *Model) Get(id int) (*Quote, error) {
 	quote := Quote{}
 	err := scanQuote(row, &quote)
 	if err != nil {
-		return nil, err 
+		return nil, err
 	}
 	return &quote, nil
 }
 
 func (m *Model) All() ([]Quote, error) {
 	rows, err := selectQuotes().
+        OrderBy("created_at desc").
 		RunWith(m.db).
 		Query()
 
@@ -76,7 +80,7 @@ func (m *Model) All() ([]Quote, error) {
 func (m *Model) Add(quote Quote) error {
 	_, err := sq.Insert("quotes").
 		Columns("content", "created_by", "created_at").
-		Values(quote.Content, quote.CreatedBy, time.Now()).
+		Values(quote.Content, quote.CreatedBy.Id, time.Now()).
 		RunWith(m.db).
 		Exec()
 

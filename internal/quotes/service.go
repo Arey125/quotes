@@ -60,7 +60,7 @@ func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
 
 	s.model.Add(Quote{
 		Content:   content,
-		CreatedBy: userWithPermissions.User.Id,
+		CreatedBy: userWithPermissions.User,
 	})
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
