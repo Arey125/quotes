@@ -15,8 +15,8 @@ import (
 )
 
 func main() {
-	config := config.Get()
-	db := database.Connect(config.Db)
+	cfg := config.Get()
+	db := database.Connect(cfg.Db)
 	_ = db
 
 	sessionManager := scs.New()
@@ -28,7 +28,7 @@ func main() {
 	mux.Handle("GET /static/", http.StripPrefix("/static", staticFileServer))
 
 	usersModel := users.NewModel(db)
-	usersService := users.NewService(config.Oauth, sessionManager, &usersModel)
+	usersService := users.NewService(cfg.Oauth, sessionManager, &usersModel)
 	usersService.Register(mux)
 	injectUserMiddleware := users.NewInjectUserMiddleware(&usersModel, sessionManager)
 
@@ -37,14 +37,23 @@ func main() {
 	quotesService.Register(mux)
 
 	server := http.Server{
-		Addr:         fmt.Sprintf(":%d", config.Port),
+		Addr:         fmt.Sprintf(":%d", cfg.Port),
 		Handler:      sessionManager.LoadAndSave(injectUserMiddleware.Wrap(mux)),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
 	}
 
-	fmt.Printf("Listening on http://127.0.0.1:%d\n", config.Port)
+	if cfg.Secure {
+		fmt.Printf("Listening on https://127.0.0.1:%d\n", cfg.Port)
+		err := server.ListenAndServeTLS(cfg.CertFile, cfg.KeyFile)
+		if err != nil {
+			panic(err)
+		}
+		return
+	}
+	fmt.Printf("Listening on http://127.0.0.1:%d\n", cfg.Port)
+
 	err := server.ListenAndServe()
 	if err != nil {
 		panic(err)

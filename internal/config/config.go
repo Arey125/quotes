@@ -10,9 +10,12 @@ import (
 )
 
 type config struct {
-	Port          int
-	Db            string
-	Oauth         users.OauthConfig
+	Port     int
+	Db       string
+	Oauth    users.OauthConfig
+	Secure   bool
+	CertFile string
+	KeyFile  string
 }
 
 func getString(name string) string {
@@ -32,6 +35,17 @@ func getInt(name string) int {
 	return res
 }
 
+func getBool(name string) bool {
+	res := os.Getenv(name)
+	if res == "true" {
+		return true
+	}
+	if res == "false" {
+		return false
+	}
+	panic(fmt.Sprintf("%s environment variable is not set", name))
+}
+
 func Get() config {
 	port := getInt("PORT")
 	db := getString("DB")
@@ -39,17 +53,23 @@ func Get() config {
 	id := getString("CLIENT_ID")
 	secret := getString("CLIENT_SECRET")
 	callbackUrl := getString("CLIENT_CALLBACK_URL")
+	sessionSecret := getString("SESSION_SECRET")
 
-    sessionSecret := getString("SESSION_SECRET")
+	secure := getBool("SECURE")
+	certFile := getString("CERT_FILE")
+	keyFile := getString("KEY_FILE")
 
 	return config{
 		Port: port,
 		Db:   db,
 		Oauth: users.OauthConfig{
-			Id:          id,
-			Secret:      secret,
-			CallbackUrl: callbackUrl,
-            SessionSecret: sessionSecret,
+			Id:            id,
+			Secret:        secret,
+			CallbackUrl:   callbackUrl,
+			SessionSecret: sessionSecret,
 		},
+		Secure: secure,
+		CertFile: certFile,
+		KeyFile: keyFile,
 	}
 }
