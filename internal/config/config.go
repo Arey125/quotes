@@ -56,8 +56,12 @@ func Get() config {
 	sessionSecret := getString("SESSION_SECRET")
 
 	secure := getBool("SECURE")
-	certFile := getString("CERT_FILE")
-	keyFile := getString("KEY_FILE")
+	certFile := ""
+	keyFile := ""
+	if secure {
+		certFile = getString("CERT_FILE")
+		keyFile = getString("KEY_FILE")
+	}
 
 	return config{
 		Port: port,
@@ -68,8 +72,8 @@ func Get() config {
 			CallbackUrl:   callbackUrl,
 			SessionSecret: sessionSecret,
 		},
-		Secure: secure,
+		Secure:   secure,
 		CertFile: certFile,
-		KeyFile: keyFile,
+		KeyFile:  keyFile,
 	}
 }
