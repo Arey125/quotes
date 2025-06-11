@@ -10,31 +10,29 @@ templ Navigation(userWithPermissions *UserWithPermissions) {
 		permissions = userWithPermissions.Permissions
 	}
 	}}
-	<div class="navbar-menu">
-		<div class="navbar-start">
+	<div class="navbar-start">
+		<ul class="menu menu-horizontal px-1">
 			if permissions.HasPermission(PermissonUserPermissions) {
-				<a class="navbar-item" href="/user-permissions">
-					Permissions
-				</a>
+				<li>
+					<a class="navbar-item" href="/user-permissions">
+						Permissions
+					</a>
+				</li>
 			}
-		</div>
-		<div class="navbar-end">
-			<div class="navbar-item">
-				@userBadge(user)
-			</div>
-		</div>
+		</ul>
+	</div>
+	<div class="navbar-end">
+		@userBadge(user)
 	</div>
 }
 
 templ userBadge(user *User) {
 	if user == nil {
-		<div class="buttons">
-			<a class="button is-info" href="/auth/google">
-				<strong>Log in</strong>
-			</a>
-		</div>
+		<a class="btn btn-accent" href="/auth/google">
+			<strong>Log in</strong>
+		</a>
 	} else {
-		<div class="pr-4">
+		<div>
 			<span>
 				{ user.Name }
 			</span>

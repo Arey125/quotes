@@ -4,9 +4,11 @@ import "quotes/internal/ui"
 
 templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermissions) {
 	@ui.Base(userBadge) {
-		<div class="container">
-			<section class="section">
-				<h1 class="title">Permissions</h1>
+		<div class="flex items-center justify-between gap-4 pb-4 h-16">
+			<h1 class="font-title text-xl md:max-lg:hidden">Permissions</h1>
+		</div>
+		<div class="card bg-base-100 mb-4">
+			<div class="card-body overflow-auto">
 				<table class="table">
 					<thead>
 						<tr>
@@ -57,7 +59,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 						}
 					</tbody>
 				</table>
-			</section>
+			</div>
 		</div>
 	}
 }

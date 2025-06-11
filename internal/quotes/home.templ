@@ -4,37 +4,33 @@ import "quotes/internal/ui"
 
 templ home(c PageContext, quotes []Quote) {
 	@ui.Base(c.getNavigation()) {
-		<div class="container">
-			<section class="section">
-				<nav class="level">
-					<h1 class="title">Quotes</h1>
-					if c.getPermissions().CanWriteQuotes {
-						<a class="button is-primary" href="/quotes/create">
-							Create
-						</a>
-					}
-				</nav>
-				if c.getPermissions().CanReadQuotes {
-					for _, quote := range quotes {
-						<div class="card">
-							<div class="card-content">
-								<div>
-									<span class="title is-5">
-										{ quote.Content }
-									</span>
-								</div>
-								<br/>
-								@userIcon()
-								{ quote.CreatedBy.Name }
-								<br/>
-								@dateIcon()
-								{ quote.CreatedAt.Format("02.01.2006 15:04:05") }
-							</div>
-						</div>
-					}
-				}
-			</section>
+		<div class="flex items-center justify-between gap-4 pb-4 h-16">
+			<h1 class="font-title text-xl md:max-lg:hidden">Quotes</h1>
+			if c.getPermissions().CanWriteQuotes {
+				<a class="btn btn-success" href="/quotes/create">
+					Create
+				</a>
+			}
 		</div>
+		if c.getPermissions().CanReadQuotes {
+			for _, quote := range quotes {
+				<div class="card bg-base-100 mb-4">
+					<div class="card-body">
+						<h2 class="card-title mb-2">{ quote.Content }</h2>
+						<ul class="flex flex-col gap-2">
+							<li class="flex gap-1 opacity-70 items-center">
+								@userIcon()
+								<span>{ quote.CreatedBy.Name }</span>
+							</li>
+							<li class="flex gap-1 opacity-70 items-center">
+								@dateIcon()
+								<span>{ quote.CreatedAt.Format("02.01.2006 15:04:05") }</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+			}
+		}
 	}
 }
 
@@ -44,14 +40,14 @@ templ userIcon() {
 		width="16"
 		height="16"
 		viewBox="0 0 24 24"
-		fill="currentColor"
+		fill="none"
 		stroke="currentColor"
 		stroke-width="2"
 		stroke-linecap="round"
 		stroke-linejoin="round"
 		class="lucide lucide-user-icon lucide-user"
 	>
-		<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2 Z"></path>
+		<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
 		<circle cx="12" cy="7" r="4"></circle>
 	</svg>
 }

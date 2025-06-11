@@ -1,26 +1,27 @@
 package ui
 
 templ Base(navigation templ.Component) {
-	<html>
+	<html data-theme="dark" class="bg-base-200">
 		<head>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 			<title>Quotes</title>
-			<link rel="stylesheet" href="/static/bulma.min.css"/>
 			<link rel="stylesheet" href="/static/theme.css"/>
 			<script src="/static/htmx.debug.js"></script>
 			<script defer src="/static/alpinejs.min.js"></script>
+			<link href="/static/daisyui@5.css" rel="stylesheet" type="text/css"/>
+			<script src="/static/tailwind-browser@4.js"></script>
 		</head>
 		<body>
-			<nav class="navbar has-shadow" role="navigation" aria-label="main navigation">
-				<div class="navbar-brand">
-					<a class="logo" href="/">
-						Quotes
-					</a>
-				</div>
-                @navigation
-			</nav>
-			{ children... }
+			<div class="navbar bg-base-100 shadow-sm px-4">
+				<a class="logo" href="/">
+					Quotes
+				</a>
+				@navigation
+			</div>
+			<div class="pt-4 max-w-300 mx-auto px-4">
+				{ children... }
+			</div>
 		</body>
 	</html>
 }
