@@ -64,7 +64,7 @@ func (m *Model) Get(id int) (*Quote, error) {
 
 func (m *Model) All() ([]Quote, error) {
 	rows, err := selectQuotes().
-        OrderBy("created_at desc").
+		OrderBy("created_at desc").
 		RunWith(m.db).
 		Query()
 
@@ -81,6 +81,15 @@ func (m *Model) Add(quote Quote) error {
 	_, err := sq.Insert("quotes").
 		Columns("content", "created_by", "created_at").
 		Values(quote.Content, quote.CreatedBy.Id, time.Now()).
+		RunWith(m.db).
+		Exec()
+
+	return err
+}
+
+func (m *Model) Delete(id int) error {
+	_, err := sq.Delete("quotes").
+		Where(sq.Eq{"id": id}).
 		RunWith(m.db).
 		Exec()
 
