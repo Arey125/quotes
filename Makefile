@@ -1,12 +1,12 @@
 include .env
 BIN = cf-search
 
-all:
+tailwind:
+	@$(TAILWIND) -i app.css -o ./static/tailwind-output.css --minify
+
+all: tailwind
 	@templ generate
 	@go build -o bin/$(BIN) cmd/web/*
-
-cli-build:
-	@go build -o bin/$(CLIBIN) cmd/cli/*
 
 run: all
 	@./bin/$(BIN)
