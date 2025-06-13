@@ -1,6 +1,7 @@
 package quotes
 
 import (
+	"fmt"
 	"net/http"
 	"quotes/internal/server"
 	"quotes/internal/users"
@@ -17,6 +18,12 @@ func NewService(model *Model) Service {
 
 func (s *Service) Register(mux *http.ServeMux) {
 	mux.HandleFunc("GET /", s.homePage)
+	mux.Handle("GET /quotes/search",
+		users.OnlyWithPermission(
+			http.HandlerFunc(s.searchGet),
+			users.PermissonQuotesRead,
+		),
+	)
 	mux.Handle("GET /quotes/create",
 		users.OnlyWithPermission(
 			http.HandlerFunc(s.createPage),
@@ -46,6 +53,17 @@ func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	home(pageContext, quotes).Render(r.Context(), w)
+}
+
+func (s *Service) searchGet(w http.ResponseWriter, r *http.Request) {
+	searchString := r.FormValue("search")
+	fmt.Println(searchString)
+	quotes, err := s.model.Search(searchString)
+	if err != nil {
+		server.ServerError(w)
+		return
+	}
+	quoteList(quotes).Render(r.Context(), w)
 }
 
 func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {

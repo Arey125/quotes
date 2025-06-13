@@ -2,6 +2,7 @@ package quotes
 
 import (
 	"database/sql"
+	"fmt"
 	"quotes/internal/db"
 	"quotes/internal/users"
 	"time"
@@ -47,23 +48,24 @@ func selectQuotes() sq.SelectBuilder {
 		Join("users ON quotes.created_by = users.id")
 }
 
-func (m *Model) Get(id int) (*Quote, error) {
-	row := selectQuotes().
-		Where(sq.Eq{"id": id}).
-		Limit(1).
+func (m *Model) All() ([]Quote, error) {
+	rows, err := selectQuotes().
+		OrderBy("created_at desc").
 		RunWith(m.db).
-		QueryRow()
+		Query()
 
-	quote := Quote{}
-	err := scanQuote(row, &quote)
 	if err != nil {
 		return nil, err
 	}
-	return &quote, nil
+
+	return db.Collect(rows, func(r *sql.Rows, q *Quote) error {
+		return scanQuote(r, q)
+	})
 }
 
-func (m *Model) All() ([]Quote, error) {
+func (m *Model) Search(searchString string) ([]Quote, error) {
 	rows, err := selectQuotes().
+		Where(sq.Like{"quotes.content": fmt.Sprintf("%%%s%%", searchString)}).
 		OrderBy("created_at desc").
 		RunWith(m.db).
 		Query()

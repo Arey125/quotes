@@ -14,36 +14,65 @@ templ home(c PageContext, quotes []Quote) {
 			}
 		</div>
 		if c.getPermissions().CanReadQuotes {
-			for _, quote := range quotes {
-				<div class="card bg-base-100 mb-4">
-					<div class="card-body">
-						<h2 class="card-title mb-2">{ quote.Content }</h2>
-						<div class="flex justify-between items-end">
-							<ul class="flex flex-col gap-2">
-								<li class="flex gap-1 opacity-70 items-center">
-									@userIcon()
-									<span>{ quote.CreatedBy.Name }</span>
-								</li>
-								<li class="flex gap-1 opacity-70 items-center">
-									@dateIcon()
-									<span>{ quote.CreatedAt.Format("02.01.2006 15:04:05") }</span>
-								</li>
-							</ul>
-							<button
-								hx-confirm="Are you sure you want to delete this quote?"
-								data-confirm-title="Delete quote"
-								hx-delete={ fmt.Sprintf("/quotes/%d", quote.Id) }
-								hx-target="closest .card"
-								hx-swap="outerHTML"
-								class="btn btn-square btn-outline btn-error flex items-center justify-center"
-							>
-								@deleteIcon()
-							</button>
-						</div>
-					</div>
-				</div>
-			}
+			<label class="input mb-4">
+				<svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+					<g
+						stroke-linejoin="round"
+						stroke-linecap="round"
+						stroke-width="2.5"
+						fill="none"
+						stroke="currentColor"
+					>
+						<circle cx="11" cy="11" r="8"></circle>
+						<path d="m21 21-4.3-4.3"></path>
+					</g>
+				</svg>
+				<input
+					type="search"
+					class="grow"
+                    name="search"
+					placeholder="Search"
+					hx-trigger="input changed"
+					hx-get="/quotes/search"
+                    hx-target="#quoteList"
+				/>
+			</label>
+			<div id="quoteList">
+				@quoteList(quotes)
+			</div>
 		}
+	}
+}
+
+templ quoteList(quotes []Quote) {
+	for _, quote := range quotes {
+		<div class="card bg-base-100 mb-4">
+			<div class="card-body">
+				<h2 class="card-title mb-2">{ quote.Content }</h2>
+				<div class="flex justify-between items-end">
+					<ul class="flex flex-col gap-2">
+						<li class="flex gap-1 opacity-70 items-center">
+							@userIcon()
+							<span>{ quote.CreatedBy.Name }</span>
+						</li>
+						<li class="flex gap-1 opacity-70 items-center">
+							@dateIcon()
+							<span>{ quote.CreatedAt.Format("02.01.2006 15:04:05") }</span>
+						</li>
+					</ul>
+					<button
+						hx-confirm="Are you sure you want to delete this quote?"
+						data-confirm-title="Delete quote"
+						hx-delete={ fmt.Sprintf("/quotes/%d", quote.Id) }
+						hx-target="closest .card"
+						hx-swap="outerHTML"
+						class="btn btn-square btn-outline btn-error flex items-center justify-center"
+					>
+						@deleteIcon()
+					</button>
+				</div>
+			</div>
+		</div>
 	}
 }
 
