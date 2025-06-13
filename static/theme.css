@@ -3,3 +3,26 @@
   font-weight: 600;
   margin-right: 12px;
 }
+
+.swal2-confirm {
+  color: var(--color-success-content) !important;
+  background-color: var(--color-success) !important;
+}
+
+.swal2-cancel {
+  color: var(--color-error-content) !important;
+  background-color: var(--color-error) !important;
+}
+
+.swal2-title {
+  color: var(--color-base-content);
+}
+
+.swal2-html-container {
+  color: var(--color-base-content);
+  opacity: 80%;
+}
+
+.swal2-actions {
+  gap: 8px;
+}

@@ -31,9 +31,10 @@ templ home(c PageContext, quotes []Quote) {
 							</ul>
 							<button
 								hx-confirm="Are you sure you want to delete this quote?"
-                                hx-delete={fmt.Sprintf("/quotes/%d", quote.Id)}
-                                hx-target="closest .card"
-                                hx-swap="outerHTML"
+								data-confirm-title="Delete quote"
+								hx-delete={ fmt.Sprintf("/quotes/%d", quote.Id) }
+								hx-target="closest .card"
+								hx-swap="outerHTML"
 								class="btn btn-square btn-outline btn-error flex items-center justify-center"
 							>
 								@deleteIcon()
