@@ -13,6 +13,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 					<thead>
 						<tr>
 							<th>Name</th>
+							<th>Email</th>
 							<th>Can read quotes</th>
 							<th>Can write quotes</th>
 							<th>Can read/change permissions</th>
@@ -24,6 +25,9 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 								<td>
 									{ user.User.Name }
 									<input type="hidden" name="user" value={ user.User.Id }/>
+								</td>
+								<td>
+									{ user.User.Email }
 								</td>
 								<td>
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">

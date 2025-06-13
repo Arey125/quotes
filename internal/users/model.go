@@ -19,6 +19,7 @@ type User struct {
 	Id           int
 	GoogleUserId string
 	Name         string
+	Email        string
 }
 
 type UserPermissions struct {
@@ -53,16 +54,20 @@ func NewModel(db *sql.DB) Model {
 	return Model{db}
 }
 
+func selectUsers() sq.SelectBuilder {
+	return sq.Select("id", "google_user_id", "name", "email").
+		From("users")
+}
+
 func (m *Model) Get(id int) (*User, error) {
-	row := sq.Select("id", "google_user_id", "name").
-		From("users").
+	row := selectUsers().
 		Where(sq.Eq{"id": id}).
 		Limit(1).
 		RunWith(m.db).
 		QueryRow()
 
 	user := User{}
-	err := row.Scan(&user.Id, &user.GoogleUserId, &user.Name)
+	err := row.Scan(&user.Id, &user.GoogleUserId, &user.Name, &user.Email)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -73,8 +78,7 @@ func (m *Model) Get(id int) (*User, error) {
 }
 
 func (m *Model) All() ([]User, error) {
-	rows, err := sq.Select("id", "google_user_id", "name").
-		From("users").
+	rows, err := selectUsers().
 		RunWith(m.db).
 		Query()
 
@@ -83,20 +87,19 @@ func (m *Model) All() ([]User, error) {
 	}
 
 	return db.Collect(rows, func(rows *sql.Rows, u *User) error {
-		return rows.Scan(&u.Id, &u.GoogleUserId, &u.Name)
+		return rows.Scan(&u.Id, &u.GoogleUserId, &u.Name, &u.Email)
 	})
 }
 
 func (m *Model) GetByGoogleUserId(googleUserId string) (*User, error) {
-	row := sq.Select("id", "google_user_id", "name").
-		From("users").
+	row := selectUsers().
 		Where(sq.Eq{"google_user_id": googleUserId}).
 		Limit(1).
 		RunWith(m.db).
 		QueryRow()
 
 	user := User{}
-	err := row.Scan(&user.Id, &user.GoogleUserId, &user.Name)
+	err := row.Scan(&user.Id, &user.GoogleUserId, &user.Name, &user.Email)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -108,8 +111,22 @@ func (m *Model) GetByGoogleUserId(googleUserId string) (*User, error) {
 
 func (m *Model) Add(user User) error {
 	_, err := sq.Insert("users").
-		Columns("google_user_id", "name").
-		Values(user.GoogleUserId, user.Name).
+		Columns("google_user_id", "name", "email").
+		Values(user.GoogleUserId, user.Name, user.Email).
+		RunWith(m.db).
+		Exec()
+
+	return err
+}
+
+func (m *Model) Update(user User) error {
+	_, err := sq.Update("users").
+		SetMap(map[string]any{
+			"google_user_id": user.GoogleUserId,
+			"name":           user.Name,
+			"email":          user.Email,
+		}).
+		Where(sq.Eq{"id": user.Id}).
 		RunWith(m.db).
 		Exec()
 
