@@ -57,10 +57,6 @@ func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 	userWithPermissions := users.GetUser(r)
 
-	if userWithPermissions == nil {
-		http.Error(w, "Forbidden", http.StatusForbidden)
-		return
-	}
 	if len(content) < 1 {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
