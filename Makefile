@@ -1,7 +1,9 @@
 include .env
 BIN = cf-search
 
-tailwind:
+.PHONY: tailwind all run sqlite migrate migrate-down
+
+tailwind: 
 	@$(TAILWIND) -i app.css -o ./static/tailwind-output.css --minify
 
 all: tailwind
