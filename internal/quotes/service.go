@@ -1,7 +1,6 @@
 package quotes
 
 import (
-	"fmt"
 	"net/http"
 	"quotes/internal/server"
 	"quotes/internal/users"
@@ -57,7 +56,6 @@ func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
 
 func (s *Service) searchGet(w http.ResponseWriter, r *http.Request) {
 	searchString := r.FormValue("search")
-	fmt.Println(searchString)
 	quotes, err := s.model.Search(searchString)
 	if err != nil {
 		server.ServerError(w)
