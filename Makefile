@@ -1,5 +1,5 @@
 include .env
-BIN = cf-search
+BIN = quotes
 
 .PHONY: tailwind all run sqlite migrate migrate-down
 
