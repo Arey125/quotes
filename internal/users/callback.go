@@ -16,14 +16,14 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 	r.URL.RawQuery = q.Encode()
 	res, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {
-		server.ServerError(w)
+		server.ServerError(w, err)
 		return
 	}
 
 	user, err := s.model.GetByGoogleUserId(res.UserID)
 
 	if err != nil {
-		server.ServerError(w)
+		server.ServerError(w, err)
 		panic(fmt.Errorf("GetByGoogleUserId user model method error: %w", err))
 	}
 
@@ -34,13 +34,13 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 			Email:        res.Email,
 		})
 		if err != nil {
-			server.ServerError(w)
+			server.ServerError(w, err)
 			panic(fmt.Errorf("Add user model method error: %w", err))
 		}
 
 		user, err = s.model.GetByGoogleUserId(res.UserID)
 		if err != nil || user == nil {
-			server.ServerError(w)
+			server.ServerError(w, err)
 			panic(fmt.Errorf("Unable to get user after adding: %w", err))
 		}
 	} else {
@@ -53,7 +53,7 @@ func (s *Service) callback(w http.ResponseWriter, r *http.Request) {
 		err := s.model.Update(*user)
 
 		if err != nil {
-			server.ServerError(w)
+			server.ServerError(w, err)
 			panic(fmt.Errorf("error updating user data: %w", err))
 		}
 	}

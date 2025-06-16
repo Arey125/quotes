@@ -48,7 +48,7 @@ func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
 	pageContext := s.getPageContext(r)
 	quotes, err := s.model.All()
 	if err != nil {
-		server.ServerError(w)
+		server.ServerError(w, err)
 		return
 	}
 	home(pageContext, quotes).Render(r.Context(), w)
@@ -58,7 +58,7 @@ func (s *Service) searchGet(w http.ResponseWriter, r *http.Request) {
 	searchString := r.FormValue("search")
 	quotes, err := s.model.Search(searchString)
 	if err != nil {
-		server.ServerError(w)
+		server.ServerError(w, err)
 		return
 	}
 	quoteList(quotes).Render(r.Context(), w)
@@ -83,7 +83,7 @@ func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
 		CreatedBy: userWithPermissions.User,
 	})
 	if err != nil {
-		server.ServerError(w)
+		server.ServerError(w, err)
 		return
 	}
 
@@ -100,7 +100,7 @@ func (s *Service) deleteQuote(w http.ResponseWriter, r *http.Request) {
 
 	err = s.model.Delete(id)
 	if err != nil {
-		server.ServerError(w)
+		server.ServerError(w, err)
 		return
 	}
 }
