@@ -1,12 +1,10 @@
 include .env
 BIN = quotes
 
-.PHONY: tailwind all run sqlite migrate migrate-down
+.PHONY: all run sqlite migrate migrate-down
 
-tailwind: 
+all:
 	@$(TAILWIND) -i app.css -o ./static/tailwind-output.css --minify
-
-all: tailwind
 	@templ generate
 	@go build -o bin/$(BIN) cmd/web/*
 

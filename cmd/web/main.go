@@ -9,6 +9,7 @@ import (
 	database "quotes/internal/db"
 	"quotes/internal/quotes"
 	"quotes/internal/users"
+	"quotes/static"
 
 	"github.com/alexedwards/scs/sqlite3store"
 	"github.com/alexedwards/scs/v2"
@@ -24,7 +25,7 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	staticFileServer := http.FileServer(http.Dir("./static"))
+	staticFileServer := http.FileServer(http.FS(static.StaticFiles))
 	mux.Handle("GET /static/", http.StripPrefix("/static", staticFileServer))
 
 	usersModel := users.NewModel(db)
