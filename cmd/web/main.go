@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"net/http"
 	"time"
@@ -16,7 +17,10 @@ import (
 )
 
 func main() {
-	cfg := config.Get()
+	envFile := flag.String("env", "./.env", "path to environment file")
+	flag.Parse()
+
+	cfg := config.Get(*envFile)
 	db := database.Connect(cfg.Db)
 	_ = db
 

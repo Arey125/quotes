@@ -5,8 +5,9 @@ import (
 	"os"
 	"strconv"
 
-	_ "github.com/joho/godotenv/autoload"
 	"quotes/internal/users"
+
+	"github.com/joho/godotenv"
 )
 
 type config struct {
@@ -46,7 +47,9 @@ func getBool(name string) bool {
 	panic(fmt.Sprintf("%s environment variable is not set", name))
 }
 
-func Get() config {
+func Get(envFile string) config {
+	godotenv.Load(envFile)
+
 	port := getInt("PORT")
 	db := getString("DB")
 
