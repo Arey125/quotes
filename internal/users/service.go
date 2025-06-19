@@ -9,6 +9,7 @@ import (
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
 	"github.com/markbates/goth/providers/google"
+	"github.com/gorilla/sessions"
 )
 
 type Service struct {
@@ -25,6 +26,7 @@ func NewService(
 	goth.UseProviders(
 		google.New(config.Id, config.Secret, config.CallbackUrl, "email", "profile"),
 	)
+	gothic.Store = sessions.NewCookieStore([]byte(config.SessionSecret))
 
 	return Service{
 		config:         config,
