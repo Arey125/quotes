@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"quotes/internal/server"
 
-	_ "github.com/joho/godotenv/autoload"
-
 	"github.com/markbates/goth/gothic"
 )
 

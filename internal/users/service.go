@@ -5,8 +5,6 @@ import (
 	"quotes/internal/server"
 	"strconv"
 
-	_ "github.com/joho/godotenv/autoload"
-
 	"github.com/alexedwards/scs/v2"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
