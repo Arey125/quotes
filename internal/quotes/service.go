@@ -16,7 +16,7 @@ func NewService(model *Model) Service {
 }
 
 func (s *Service) Register(mux *http.ServeMux) {
-	mux.HandleFunc("GET /", s.homePage)
+	mux.HandleFunc("GET /{$}", s.homePage)
 	mux.Handle("GET /quotes/search",
 		users.OnlyWithPermission(
 			http.HandlerFunc(s.searchGet),
