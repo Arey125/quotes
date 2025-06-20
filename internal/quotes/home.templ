@@ -9,7 +9,7 @@ import (
 templ home(c PageContext, quotes []Quote) {
 	@ui.Base(c.getNavigation()) {
 		<div class="flex items-center justify-between gap-4 pb-4 h-16">
-			<h1 class="font-title text-xl md:max-lg:hidden">Quotes</h1>
+			<h1 class="font-title text-xl">Quotes</h1>
 			if c.getPermissions().HasPermission(users.PermissonQuotesWrite) {
 				<a class="btn btn-success" href="/quotes/create">
 					Create
@@ -17,7 +17,7 @@ templ home(c PageContext, quotes []Quote) {
 			}
 		</div>
 		if c.getPermissions().HasPermission(users.PermissonQuotesRead) {
-			<label class="input mb-4">
+			<label class="input mb-4 w-full sm:w-80">
 				<svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 					<g
 						stroke-linejoin="round"
