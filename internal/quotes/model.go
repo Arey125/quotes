@@ -2,6 +2,7 @@ package quotes
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"quotes/internal/db"
 	"quotes/internal/users"
@@ -46,6 +47,24 @@ func selectQuotes() sq.SelectBuilder {
 	return sq.Select("quotes.id", "quotes.content", "quotes.created_at", "users.id", "users.name").
 		From("quotes").
 		Join("users ON quotes.created_by = users.id")
+}
+
+func (m *Model) Get(id int) (*Quote, error) {
+	row := selectQuotes().
+		Where(sq.Eq{"quotes.id": id}).
+		Limit(1).
+		RunWith(m.db).
+		QueryRow()
+	
+	quote := Quote{}
+	err := scanQuote(row, &quote)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &quote, nil
 }
 
 func (m *Model) All() ([]Quote, error) {

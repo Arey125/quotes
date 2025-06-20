@@ -16,3 +16,13 @@ func (s *Service) getUser(r *http.Request) *users.User {
 func (s *Service) getUserWithPermissions(r *http.Request) *users.UserWithPermissions {
 	return users.GetUser(r)
 }
+
+func canDeleteQuote(quote Quote, user *users.UserWithPermissions) bool {
+	if user == nil {
+		return false
+	}
+	if !user.Permissions.HasPermission(users.PermissonQuotesWrite) {
+		return false
+	}
+	return quote.CreatedBy.Id == user.User.Id || user.Permissions.HasPermission(users.PermissonQuotesModeration)
+}

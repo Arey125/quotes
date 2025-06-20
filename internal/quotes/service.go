@@ -85,10 +85,31 @@ func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) deleteQuote(w http.ResponseWriter, r *http.Request) {
+	user := users.GetUser(r)
+	if user == nil {
+		server.Forbiden(w)
+		return
+	}
+
 	idString := r.PathValue("id")
 	id, err := strconv.Atoi(idString)
 	if err != nil {
 		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	quote, err := s.model.Get(id)
+	if err != nil {
+		server.ServerError(w, err)
+		return
+	}
+	if quote == nil {
+		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		return
+	}
+
+	if !canDeleteQuote(*quote, user) {
+		server.Forbiden(w)
 		return
 	}
 
