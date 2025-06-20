@@ -1,7 +1,10 @@
 package quotes
 
-import "quotes/internal/ui"
-import "fmt"
+import (
+	"fmt"
+	"quotes/internal/ui"
+	"quotes/internal/users"
+)
 
 templ home(c PageContext, quotes []Quote) {
 	@ui.Base(c.getNavigation()) {
@@ -30,21 +33,31 @@ templ home(c PageContext, quotes []Quote) {
 				<input
 					type="search"
 					class="grow"
-                    name="search"
+					name="search"
 					placeholder="Search"
 					hx-trigger="input changed"
 					hx-get="/quotes/search"
-                    hx-target="#quoteList"
+					hx-target="#quoteList"
 				/>
 			</label>
 			<div id="quoteList">
-				@quoteList(quotes)
+				@quoteList(quotes, c.getUser())
 			</div>
 		}
 	}
 }
 
-templ quoteList(quotes []Quote) {
+func canDeleteQuote(quote Quote, user *users.UserWithPermissions) bool {
+	if user == nil {
+		return false
+	}
+	if !user.Permissions.HasPermission(users.PermissonQuotesWrite) {
+		return false
+	}
+	return quote.CreatedBy.Id == user.User.Id
+}
+
+templ quoteList(quotes []Quote, user *users.UserWithPermissions) {
 	for _, quote := range quotes {
 		<div class="card bg-base-100 mb-4">
 			<div class="card-body">
@@ -60,16 +73,18 @@ templ quoteList(quotes []Quote) {
 							<span>{ quote.CreatedAt.Format("02.01.2006 15:04:05") }</span>
 						</li>
 					</ul>
-					<button
-						hx-confirm="Are you sure you want to delete this quote?"
-						data-confirm-title="Delete quote"
-						hx-delete={ fmt.Sprintf("/quotes/%d", quote.Id) }
-						hx-target="closest .card"
-						hx-swap="outerHTML"
-						class="btn btn-square btn-outline btn-error flex items-center justify-center"
-					>
-						@deleteIcon()
-					</button>
+					if canDeleteQuote(quote, user) {
+						<button
+							hx-confirm="Are you sure you want to delete this quote?"
+							data-confirm-title="Delete quote"
+							hx-delete={ fmt.Sprintf("/quotes/%d", quote.Id) }
+							hx-target="closest .card"
+							hx-swap="outerHTML"
+							class="btn btn-square btn-outline btn-error flex items-center justify-center"
+						>
+							@deleteIcon()
+						</button>
+					}
 				</div>
 			</div>
 		</div>

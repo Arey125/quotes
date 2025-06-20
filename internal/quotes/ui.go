@@ -26,3 +26,7 @@ func (c *PageContext) getPermissions() users.UserPermissions {
 	}
 	return c.User.Permissions
 }
+
+func (c *PageContext) getUser() *users.UserWithPermissions {
+	return c.User
+}

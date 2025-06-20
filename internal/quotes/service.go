@@ -16,33 +16,26 @@ func NewService(model *Model) Service {
 }
 
 func (s *Service) Register(mux *http.ServeMux) {
-	mux.HandleFunc("GET /{$}", s.homePage)
-	mux.Handle("GET /quotes/search",
-		users.OnlyWithPermission(
-			http.HandlerFunc(s.searchGet),
+	readMiddleware := func(handler http.HandlerFunc) http.Handler {
+		return users.OnlyWithPermission(
+			http.HandlerFunc(handler),
 			users.PermissonQuotesRead,
-		),
-	)
-	mux.Handle("GET /quotes/create",
-		users.OnlyWithPermission(
-			http.HandlerFunc(s.createPage),
+		)
+	}
+	writeMiddleware := func(handler http.HandlerFunc) http.Handler {
+		return users.OnlyWithPermission(
+			http.HandlerFunc(handler),
 			users.PermissonQuotesWrite,
-		),
-	)
-	mux.Handle("POST /quotes/",
-		users.OnlyWithPermission(
-			http.HandlerFunc(s.createPost),
-			users.PermissonQuotesWrite,
-		),
-	)
+		)
+	}
 
-	mux.Handle("DELETE /quotes/{id}",
-		users.OnlyWithPermission(
-			http.HandlerFunc(s.deleteQuote),
-			users.PermissonQuotesWrite,
-		),
-	)
+	mux.HandleFunc("GET /{$}", s.homePage)
+	mux.Handle("GET /quotes/search", readMiddleware(s.searchGet))
+	mux.Handle("GET /quotes/create", writeMiddleware(s.createPage))
+	mux.Handle("POST /quotes/", writeMiddleware(s.createPost))
+	mux.Handle("DELETE /quotes/{id}", writeMiddleware(s.deleteQuote))
 }
+
 
 func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
 	pageContext := s.getPageContext(r)
@@ -55,13 +48,14 @@ func (s *Service) homePage(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Service) searchGet(w http.ResponseWriter, r *http.Request) {
+	pageContext := s.getPageContext(r)
 	searchString := r.FormValue("search")
 	quotes, err := s.model.Search(searchString)
 	if err != nil {
 		server.ServerError(w, err)
 		return
 	}
-	quoteList(quotes).Render(r.Context(), w)
+	quoteList(quotes, pageContext.User).Render(r.Context(), w)
 }
 
 func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {
