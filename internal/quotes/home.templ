@@ -10,13 +10,13 @@ templ home(c PageContext, quotes []Quote) {
 	@ui.Base(c.getNavigation()) {
 		<div class="flex items-center justify-between gap-4 pb-4 h-16">
 			<h1 class="font-title text-xl md:max-lg:hidden">Quotes</h1>
-			if c.getPermissions().CanWriteQuotes {
+			if c.getPermissions().HasPermission(users.PermissonQuotesWrite) {
 				<a class="btn btn-success" href="/quotes/create">
 					Create
 				</a>
 			}
 		</div>
-		if c.getPermissions().CanReadQuotes {
+		if c.getPermissions().HasPermission(users.PermissonQuotesRead) {
 			<label class="input mb-4">
 				<svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
 					<g
@@ -54,7 +54,7 @@ func canDeleteQuote(quote Quote, user *users.UserWithPermissions) bool {
 	if !user.Permissions.HasPermission(users.PermissonQuotesWrite) {
 		return false
 	}
-	return quote.CreatedBy.Id == user.User.Id
+	return quote.CreatedBy.Id == user.User.Id || user.Permissions.HasPermission(users.PermissonQuotesModeration)
 }
 
 templ quoteList(quotes []Quote, user *users.UserWithPermissions) {

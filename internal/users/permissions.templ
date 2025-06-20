@@ -16,6 +16,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 							<th>Email</th>
 							<th>Can read quotes</th>
 							<th>Can write quotes</th>
+							<th>Can moderate quotes</th>
 							<th>Can read/change permissions</th>
 						</tr>
 					</thead>
@@ -33,7 +34,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											checked?={ user.Permissions.CanReadQuotes }
+											checked?={ user.Permissions.HasPermission(PermissonQuotesRead)}
 											name={ PermissonQuotesRead }
 											hx-post="/user-permissions"
 										/>
@@ -43,7 +44,7 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											checked?={ user.Permissions.CanWriteQuotes }
+											checked?={ user.Permissions.HasPermission(PermissonQuotesWrite) }
 											name={ PermissonQuotesWrite }
 											hx-post="/user-permissions"
 										/>
@@ -53,7 +54,17 @@ templ (s *Service) permissions(userBadge templ.Component, users []UserWithPermis
 									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
 										<input
 											type="checkbox"
-											checked?={ user.Permissions.CanChangePermissions }
+											checked?={ user.Permissions.HasPermission(PermissonQuotesModeration) }
+											name={ PermissonQuotesModeration }
+											hx-post="/user-permissions"
+										/>
+									</div>
+								</td>
+								<td>
+									<div class="is-flex is-justify-content-center is-align-content-center mt-2">
+										<input
+											type="checkbox"
+											checked?={ user.Permissions.HasPermission(PermissonUserPermissions) }
 											name={ PermissonUserPermissions }
 											hx-post="/user-permissions"
 										/>

@@ -23,22 +23,11 @@ type User struct {
 }
 
 type UserPermissions struct {
-	CanReadQuotes        bool
-	CanWriteQuotes       bool
-	CanChangePermissions bool
+	permissionSet map[Permisson]bool
 }
 
 func (p UserPermissions) HasPermission(perm Permisson) bool {
-	if perm == PermissonQuotesRead {
-		return p.CanReadQuotes
-	}
-	if perm == PermissonQuotesWrite {
-		return p.CanWriteQuotes
-	}
-	if perm == PermissonUserPermissions {
-		return p.CanChangePermissions
-	}
-	panic("permission does not exist")
+	return p.permissionSet[perm]
 }
 
 type UserWithPermissions struct {
@@ -199,13 +188,20 @@ func (m *Model) GetUserWithPermissions(userId int) (*UserWithPermissions, error)
 	if err != nil {
 		return nil, err
 	}
+	canModerateQuotes, err := m.HasPermission(user.Id, PermissonQuotesModeration)
+	if err != nil {
+		return nil, err
+	}
 
 	return &UserWithPermissions{
 		User: *user,
 		Permissions: UserPermissions{
-			CanReadQuotes:        canReadQuotes,
-			CanWriteQuotes:       canWriteQuotes,
-			CanChangePermissions: canChangePermissions,
+			permissionSet: map[Permisson]bool{
+				PermissonQuotesRead:       canReadQuotes,
+				PermissonQuotesWrite:      canWriteQuotes,
+				PermissonQuotesModeration: canModerateQuotes,
+				PermissonUserPermissions:  canChangePermissions,
+			},
 		},
 	}, nil
 }

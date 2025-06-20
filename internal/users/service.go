@@ -119,9 +119,20 @@ func (s *Service) userPermissionsPage(w http.ResponseWriter, r *http.Request) {
 			server.ServerError(w, err)
 			return
 		}
-		usersWithPermissions[i].Permissions.CanWriteQuotes = canWriteQuotes
-		usersWithPermissions[i].Permissions.CanReadQuotes = canReadQuotes
-		usersWithPermissions[i].Permissions.CanChangePermissions = canChangePermissions
+		canModerateQuotes, err := s.model.HasPermission(u.Id, PermissonQuotesModeration)
+		if err != nil {
+			server.ServerError(w, err)
+			return
+		}
+
+		usersWithPermissions[i].Permissions = UserPermissions{
+			permissionSet: map[Permisson]bool{
+				PermissonQuotesRead:       canReadQuotes,
+				PermissonQuotesWrite:      canWriteQuotes,
+				PermissonQuotesModeration: canModerateQuotes,
+				PermissonUserPermissions:  canChangePermissions,
+			},
+		}
 	}
 	s.permissions(navigation, usersWithPermissions).Render(r.Context(), w)
 }
@@ -134,13 +145,13 @@ func (s *Service) changeUserPermission(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	permissonName := r.Header.Get("Hx-Trigger-Name")
-	permissonValueStr := r.FormValue(permissonName)
+	permissonSlug := r.Header.Get("Hx-Trigger-Name")
+	permissonValueStr := r.FormValue(permissonSlug)
 	permissonValue := permissonValueStr == "on"
 	if permissonValue {
-		err = s.model.AddPermission(userId, Permisson(permissonName))
+		err = s.model.AddPermission(userId, Permisson(permissonSlug))
 	} else {
-		err = s.model.RemovePermission(userId, Permisson(permissonName))
+		err = s.model.RemovePermission(userId, Permisson(permissonSlug))
 	}
 
 	if err != nil {
