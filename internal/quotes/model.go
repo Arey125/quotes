@@ -108,6 +108,16 @@ func (m *Model) Add(quote Quote) error {
 	return err
 }
 
+func (m *Model) Update(quote Quote) error {
+	_, err := sq.Update("quotes").
+		Set("content", quote.Content).
+		Where(sq.Eq{"id": quote.Id}).
+		RunWith(m.db).
+		Exec()
+
+	return err
+}
+
 func (m *Model) Delete(id int) error {
 	_, err := sq.Delete("quotes").
 		Where(sq.Eq{"id": id}).

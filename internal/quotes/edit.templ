@@ -2,10 +2,10 @@ package quotes
 
 import "quotes/internal/ui"
 
-templ create(c PageContext) {
+templ edit(c PageContext, q Quote) {
 	@ui.Base(c.getNavigation()) {
 		<div class="flex items-center justify-between gap-4 pb-4 h-16">
-			<h1 class="font-title text-xl">Create quote</h1>
+			<h1 class="font-title text-xl">Edit quote</h1>
 		</div>
 		<div class="card bg-base-100">
 			<form method="POST" autocomplete="off" class="card-body">
@@ -15,9 +15,9 @@ templ create(c PageContext) {
 					type="text"
 					placeholder="Content"
 					name="content"
-				></textarea>
+				>{q.Content}</textarea>
 				<div class="justify-start mt-4">
-					<button class="btn btn-success">Create</button>
+					<button class="btn btn-success">Edit</button>
 				</div>
 			</form>
 		</div>

@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"quotes/internal/server"
 	"quotes/internal/users"
-	"strconv"
 )
 
 type Service struct {
@@ -33,6 +32,8 @@ func (s *Service) Register(mux *http.ServeMux) {
 	mux.Handle("GET /quotes/search", readMiddleware(s.searchGet))
 	mux.Handle("GET /quotes/create", writeMiddleware(s.createPage))
 	mux.Handle("POST /quotes/", writeMiddleware(s.createPost))
+	mux.Handle("GET /quotes/{id}/edit", writeMiddleware(s.editPage))
+	mux.Handle("POST /quotes/{id}/edit", writeMiddleware(s.editPost))
 	mux.Handle("DELETE /quotes/{id}", writeMiddleware(s.deleteQuote))
 }
 
@@ -55,12 +56,59 @@ func (s *Service) searchGet(w http.ResponseWriter, r *http.Request) {
 		server.ServerError(w, err)
 		return
 	}
+
 	quoteList(quotes, pageContext.User).Render(r.Context(), w)
 }
 
 func (s *Service) createPage(w http.ResponseWriter, r *http.Request) {
 	pageContext := s.getPageContext(r)
 	create(pageContext).Render(r.Context(), w)
+}
+
+func (s *Service) editPage(w http.ResponseWriter, r *http.Request) {
+	pageContext := s.getPageContext(r)
+
+	quote, err := s.getQuoteByPath(w, r)
+	if err != nil {
+		return
+	}
+
+	if !canEditQuote(*quote, pageContext.getUser()) {
+		server.Forbiden(w)
+		return
+	}
+
+	edit(pageContext, *quote).Render(r.Context(), w)
+}
+
+func (s *Service) editPost(w http.ResponseWriter, r *http.Request) {
+	content := r.FormValue("content")
+	userWithPermissions := users.GetUser(r)
+
+	quote, err := s.getQuoteByPath(w, r)
+	if err != nil {
+		return
+	}
+
+	if !canEditQuote(*quote, userWithPermissions) {
+		server.Forbiden(w)
+		return
+	}
+
+	if len(content) < 1 {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	quote.Content = content
+
+	err = s.model.Update(*quote)
+	if err != nil {
+		server.ServerError(w, err)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (s *Service) createPost(w http.ResponseWriter, r *http.Request) {
@@ -91,29 +139,14 @@ func (s *Service) deleteQuote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idString := r.PathValue("id")
-	id, err := strconv.Atoi(idString)
-	if err != nil {
-		http.Error(w, "Bad request", http.StatusBadRequest)
-		return
-	}
+	quote, err := s.getQuoteByPath(w, r)
 
-	quote, err := s.model.Get(id)
-	if err != nil {
-		server.ServerError(w, err)
-		return
-	}
-	if quote == nil {
-		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
-		return
-	}
-
-	if !canDeleteQuote(*quote, user) {
+	if !canEditQuote(*quote, user) {
 		server.Forbiden(w)
 		return
 	}
 
-	err = s.model.Delete(id)
+	err = s.model.Delete(quote.Id)
 	if err != nil {
 		server.ServerError(w, err)
 		return

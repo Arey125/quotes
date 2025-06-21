@@ -17,7 +17,7 @@ func (s *Service) getUserWithPermissions(r *http.Request) *users.UserWithPermiss
 	return users.GetUser(r)
 }
 
-func canDeleteQuote(quote Quote, user *users.UserWithPermissions) bool {
+func canEditQuote(quote Quote, user *users.UserWithPermissions) bool {
 	if user == nil {
 		return false
 	}
