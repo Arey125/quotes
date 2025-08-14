@@ -1,7 +1,6 @@
 package quotes
 
 import (
-	"fmt"
 	"quotes/internal/ui"
 	"quotes/internal/users"
 )
@@ -48,120 +47,14 @@ templ home(c PageContext, quotes []Quote) {
 }
 
 templ quoteList(quotes []Quote, user *users.UserWithPermissions) {
+	<script src="/static/js/quote-list.js"></script>
 	for _, quote := range quotes {
-		<div class="card bg-base-100 mb-4">
-			<div class="card-body">
-				<h2 class="card-title mb-2">{ quote.Content }</h2>
-				<div class="flex justify-between items-end">
-					<ul class="flex flex-col gap-2">
-						<li class="flex gap-1 opacity-70 items-center">
-							@userIcon()
-							<span>{ quote.CreatedBy.Name }</span>
-						</li>
-						<li class="flex gap-1 opacity-70 items-center">
-							@dateIcon()
-							<span>{ quote.CreatedAt.Format("02.01.2006 15:04:05") }</span>
-						</li>
-					</ul>
-					if canEditQuote(quote, user) {
-						<div class="flex gap-2">
-							<a
-								href={ templ.SafeURL(fmt.Sprintf("/quotes/%d/edit", quote.Id)) }
-								class="btn btn-square btn-outline btn-accent flex items-center justify-center"
-							>
-								@editIcon()
-							</a>
-							<button
-								hx-confirm="Are you sure you want to delete this quote?"
-								data-confirm-title="Delete quote"
-								hx-delete={ fmt.Sprintf("/quotes/%d", quote.Id) }
-								hx-target="closest .card"
-								hx-swap="outerHTML"
-								class="btn btn-square btn-outline btn-error flex items-center justify-center"
-							>
-								@deleteIcon()
-							</button>
-						</div>
-					}
-				</div>
-			</div>
-		</div>
+		<quote-item
+			content={ quote.Content }
+			created-by={ quote.CreatedBy.Name }
+			created-at={ quote.CreatedAt.Format("02.01.2006 15:04:05") }
+			can-edit-quote={ canEditQuote(quote, user) }
+			quote-id={ quote.Id }
+		></quote-item>
 	}
-}
-
-templ userIcon() {
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		width="16"
-		height="16"
-		viewBox="0 0 24 24"
-		fill="none"
-		stroke="currentColor"
-		stroke-width="2"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-		class="lucide lucide-user-icon lucide-user"
-	>
-		<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-		<circle cx="12" cy="7" r="4"></circle>
-	</svg>
-}
-
-templ dateIcon() {
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		width="16"
-		height="16"
-		viewBox="0 0 24 24"
-		fill="none"
-		stroke="currentColor"
-		stroke-width="2"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-		class="lucide lucide-calendar-icon lucide-calendar"
-	>
-		<path d="M8 2v4"></path>
-		<path d="M16 2v4"></path>
-		<rect width="18" height="18" x="3" y="4" rx="2"></rect>
-		<path d="M3 10h18"></path>
-	</svg>
-}
-
-templ deleteIcon() {
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		width="24"
-		height="24"
-		viewBox="0 0 24 24"
-		fill="none"
-		stroke="currentColor"
-		stroke-width="2"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-		class="lucide lucide-trash2-icon lucide-trash-2"
-	>
-		<path d="M3 6h18"></path>
-		<path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
-		<path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
-		<line x1="10" x2="10" y1="11" y2="17"></line>
-		<line x1="14" x2="14" y1="11" y2="17"></line>
-	</svg>
-}
-
-templ editIcon() {
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		width="24"
-		height="24"
-		viewBox="0 0 24 24"
-		fill="none"
-		stroke="currentColor"
-		stroke-width="2"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-		class="lucide lucide-pencil-icon lucide-pencil"
-	>
-		<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
-		<path d="m15 5 4 4"></path>
-	</svg>
 }
