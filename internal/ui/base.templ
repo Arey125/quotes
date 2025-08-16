@@ -1,6 +1,9 @@
 package ui
 
-import "os"
+import (
+	"os"
+	"quotes/static"
+)
 
 templ Base(navigation templ.Component) {
 	<html data-theme="dark" class="bg-base-200">
@@ -17,9 +20,9 @@ templ Base(navigation templ.Component) {
 				<script defer src="/static/alpinejs.min.js"></script>
 				<script src="/static/sweetalert2.js"></script>
 			}
-            <script src="/static/js/icons.js"></script>
-			<link href="/static/tailwind-output.css" rel="stylesheet" type="text/css"/>
-			<link rel="stylesheet" href="/static/theme.css"/>
+			<script src={ static.GetPath("/js/icons.js") }></script>
+			<link href={ static.GetPath("/tailwind-output.css") } rel="stylesheet" type="text/css"/>
+			<link rel="stylesheet" href={ static.GetPath("/theme.css") }/>
 			<script>
               document.addEventListener("htmx:confirm", function(e) {
                 // The event is triggered on every trigger for a request, so we need to check if the element

@@ -30,7 +30,11 @@ func main() {
 	mux := http.NewServeMux()
 
 	staticFileServer := http.FileServer(http.FS(static.StaticFiles))
-	mux.Handle("GET /static/", http.StripPrefix("/static", staticFileServer))
+	staticPath := "/static/" + static.Timestamp + "/"
+	mux.Handle("GET " + staticPath, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		http.StripPrefix(staticPath, staticFileServer).ServeHTTP(w, r)
+	}))
 
 	usersModel := users.NewModel(db)
 	usersService := users.NewService(cfg.Oauth, sessionManager, &usersModel)

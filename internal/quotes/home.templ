@@ -3,6 +3,7 @@ package quotes
 import (
 	"quotes/internal/ui"
 	"quotes/internal/users"
+	"quotes/static"
 )
 
 templ home(c PageContext, quotes []Quote) {
@@ -42,7 +43,7 @@ templ home(c PageContext, quotes []Quote) {
 			<div id="quoteList">
 				@quoteList(quotes, c.getUser())
 			</div>
-			<script src="/static/js/quote-list.js"></script>
+			<script src={ static.GetPath("/js/quote-list.js") }></script>
 		}
 	}
 }
