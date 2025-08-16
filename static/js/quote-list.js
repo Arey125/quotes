@@ -1,6 +1,6 @@
 class QuoteItem extends HTMLElement {
   connectedCallback() {
-    this.content = this.getAttribute("content");
+    this.content = this.innerHTML;
     this.createdBy = this.getAttribute("created-by");
     this.createdAt = this.getAttribute("created-at");
     this.canEditQuote = this.getAttribute("can-edit-quote") === "true";

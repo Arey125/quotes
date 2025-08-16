@@ -7,7 +7,6 @@ import (
 
 templ home(c PageContext, quotes []Quote) {
 	@ui.Base(c.getNavigation()) {
-		<script src="/static/js/quote-list.js"></script>
 		<div class="flex items-center justify-between gap-4 pb-4 h-16">
 			<h1 class="font-title text-xl">Quotes</h1>
 			if c.getPermissions().HasPermission(users.PermissonQuotesWrite) {
@@ -43,6 +42,7 @@ templ home(c PageContext, quotes []Quote) {
 			<div id="quoteList">
 				@quoteList(quotes, c.getUser())
 			</div>
+			<script src="/static/js/quote-list.js"></script>
 		}
 	}
 }
@@ -50,11 +50,12 @@ templ home(c PageContext, quotes []Quote) {
 templ quoteList(quotes []Quote, user *users.UserWithPermissions) {
 	for _, quote := range quotes {
 		<quote-item
-			content={ quote.Content }
 			created-by={ quote.CreatedBy.Name }
 			created-at={ quote.CreatedAt.Format("02.01.2006 15:04:05") }
 			can-edit-quote={ canEditQuote(quote, user) }
 			quote-id={ quote.Id }
-		></quote-item>
+		>
+			{ quote.Content }
+		</quote-item>
 	}
 }
