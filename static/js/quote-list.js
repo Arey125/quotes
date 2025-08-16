@@ -6,14 +6,6 @@ class QuoteItem extends HTMLElement {
     this.canEditQuote = this.getAttribute("can-edit-quote") === "true";
     this.quoteId = this.getAttribute("quote-id");
 
-    console.log({
-      content: this.content,
-      createdBy: this.createdBy,
-      createdAt: this.createdAt,
-      canEditQuote: this.canEditQuote,
-      quoteId: this.quoteId,
-    })
-
     this.innerHTML = `
       <div class="card bg-base-100 mb-4">
         <div class="card-body">
